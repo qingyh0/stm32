@@ -1,0 +1,14 @@
+最小开发板 STM32F103C8T6
+
+引脚定义：
+PA_0	PB3	左
+PA_7	PB4	上
+PA_4	PB5	中间
+PA_1	PB6	下
+PB_11	PB7	右
+LCD_BL	PA8	背光？
+LCD_CS	PA9	
+LCD_DC	PA10	data/command？
+LCD_RES	PA11	
+LCD_SDA	PB15	
+LCD_SCK	PB13	
