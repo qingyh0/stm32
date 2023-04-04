@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
@@ -25,7 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
-#include "lcd.h"
+#include "lcd_drv.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+extern const unsigned char gImage_img[];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -87,12 +88,22 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI2_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   
-  st7735_init();
-
+	mylcd_init();
+  
+	//uint8_t rgb[]={0xf8, 0x00};//blue
+	//uint8_t rgb[]={0x00, 0x1f};//red
+	//uint8_t rgb[]={0x07, 0xE0};//green
+	mylcd_startop();
+	ST7735_FillRect(&st7735, 0, 0, 160, 80, 0x00);
+	//ST7735_FillRGBRect(&st7735, 30, 30, rgb, 30, 30);
+	ST7735_DrawBitmap(&st7735, 0, 0, (uint8_t*)gImage_img);
+	mylcd_stopop();
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -102,9 +113,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		luat_lcd_fill(0x001f);
-		luat_lcd_fill(0xf800);
-		luat_lcd_fill(0x07e0);
+		
   }
   /* USER CODE END 3 */
 }

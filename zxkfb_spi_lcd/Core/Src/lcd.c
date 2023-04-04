@@ -16,7 +16,6 @@ int32_t st7735_write(void *ctx, uint8_t reg, uint8_t* data, uint32_t len)
 	memcpy(buf+1, data, len);
 	
 	HAL_StatusTypeDef ret = HAL_SPI_Transmit(&hspi2, buf, len+1, 1000);
-	printf("st7735_write %d\n", ret);
 	return (int32_t)ret;
 }
 
@@ -27,15 +26,13 @@ int32_t st7735_read(void *ctx, uint8_t reg, uint8_t* data)
 	
 	HAL_StatusTypeDef ret = HAL_SPI_Receive(&hspi2, data, 4, 1000);
 	
-	printf("st7735_read %d\n", ret);
 	return (int32_t)ret;
 }
 
 int32_t st7735_send(void *ctx, uint8_t* data, uint32_t len)
 {
-	HAL_StatusTypeDef ret = HAL_SPI_Transmit(&hspi2, data, len, 1000);
-	
-	printf("st7735_send %d\n", ret);
+	//HAL_StatusTypeDef ret = HAL_SPI_Transmit(&hspi2, data, len, 1000);
+	HAL_StatusTypeDef ret = HAL_SPI_Transmit_DMA(&hspi2, data, len);
 	return (int32_t)ret;
 }
 
@@ -44,11 +41,10 @@ int32_t st7735_recv(void *ctx, uint8_t* data, uint32_t len)
 {
 	HAL_StatusTypeDef ret = HAL_SPI_Receive(&hspi2, data, len, 1000);
 	
-	printf("st7735_recv %d\n", ret);
 	return (int32_t)ret;
 }
 
-ST7735_Object_t st7735 ={
+ST7735_Object_t st7735_lcd ={
 	.Ctx.WriteReg = st7735_write,
 	.Ctx.ReadReg = st7735_read,
 	.Ctx.SendData = st7735_send,

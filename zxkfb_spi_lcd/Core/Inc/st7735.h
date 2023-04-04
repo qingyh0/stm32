@@ -115,6 +115,10 @@ typedef struct
 #define ST7735_OK                (0)
 #define ST7735_ERROR             (-1)
 
+
+#define Xoff 0
+#define Yoff 24
+
 /** 
   * @brief  ST7735 ID  
   */  
@@ -123,8 +127,8 @@ typedef struct
 /** 
   * @brief  ST7735 Size  
   */  
-#define  ST7735_WIDTH           128U
-#define  ST7735_HEIGHT          160U
+#define  ST7735_WIDTH           160U
+#define  ST7735_HEIGHT          80U
 
 /**
  *  @brief LCD_OrientationTypeDef
