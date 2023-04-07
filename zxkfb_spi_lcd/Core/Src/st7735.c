@@ -81,7 +81,7 @@ ST7735_LCD_Drv_t   ST7735_LCD_Driver =
     bit7  1:右->左  0:左->右
     bit6  1:下->上  0:上->下
     bit5  1:xy轴交换  0:xy轴不交换
-    bit4  1:下->上刷新  0:上->下刷新
+    bit4  1:下->上刷新  0:上->下刷新(ML=0上到下，左到右)
     bit3  1:BGR 0:RGB
     bit2  1:右->左刷新  0:左->右刷新
 
@@ -181,82 +181,85 @@ int32_t ST7735_Init(ST7735_Object_t *pObj, uint32_t ColorCoding, uint32_t Orient
     /* Out of sleep mode, 0 args, no delay */
     tmp = 0x00U;
     ret = st7735_write_reg(&pObj->Ctx, ST7735_SLEEP_OUT, &tmp, 0);
+
+    //HAL_Delay(120);
+
     /* Frame rate ctrl - normal mode, 3 args:
       rate = fosc/((RTNA + 20)*(LINE + FPA + BPA)) 
     */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_FRAME_RATE_CTRL1, &tmp, 0);
-    tmp = 0x05U;//RTNA
+    tmp = 0x01U;//RTNA  0x05
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x3AU;//FPA
+    tmp = 0x2CU;//FPA 0x3A
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x3AU;//BPA
+    tmp = 0x2DU;//BPA 0x3A
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
 
     /* Frame rate control - idle mode, 3 args:Rate = fosc/(1x2+40) * (LINE+2C+2D) */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_FRAME_RATE_CTRL2, &tmp, 0);
-    tmp = 0x05U;
+    tmp = 0x01U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x3AU;
+    tmp = 0x2CU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x3AU;
+    tmp = 0x2DU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
 
     /* Frame rate ctrl - partial mode, 6 args: Dot inversion mode, Line inversion mode */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_FRAME_RATE_CTRL3, &tmp, 0);
-    tmp = 0x05U;
+    tmp = 0x01U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x3AU;
+    tmp = 0x2CU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x3AU;
+    tmp = 0x2DU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x05U;
+    tmp = 0x01U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x3AU;
+    tmp = 0x2CU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x3AU;
+    tmp = 0x2DU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
 
     /* Display inversion ctrl, 1 arg, no delay: No inversion */
-    tmp = 0x03U;
+    tmp = 0x07U;//frame inversion
     ret += st7735_write_reg(&pObj->Ctx, ST7735_FRAME_INVERSION_CTRL, &tmp, 1);
 
     /* Power control, 2 args, no delay: 3.3V , 1.0uA */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_PWR_CTRL1, &tmp, 0);
-    tmp = 0x1EU;
+    tmp = 0x1DU;//3.35v
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x40U;
+    tmp = 0x70U;//1uA
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
 
     /* Power control, 1 arg, no delay: VGH25 = 2.4C VGSEL = -10 VGH = 3 * AVDD */
-    tmp = 0xC0U;
+    tmp = 0xC5U;
     ret += st7735_write_reg(&pObj->Ctx, ST7735_PWR_CTRL2, &tmp, 1);
 
     /* Power control, 2 args, no delay: Opamp current small, Boost frequency */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_PWR_CTRL3, &tmp, 0);
-    tmp = 0x0DU;
+    tmp = 0x0AU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x00U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
 
     /* Power control, 2 args, no delay: BCLK/2, Opamp current small & Medium low */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_PWR_CTRL4, &tmp, 0);
-    tmp = 0x8DU;
+    tmp = 0x8AU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x6AU;
+    tmp = 0x2AU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
 
     /* Power control, 2 args, no delay */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_PWR_CTRL5, &tmp, 0);
-    tmp = 0x8DU;
+    tmp = 0x8AU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0xEEU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
 
     /* Power control, 1 arg, no delay */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_VCOMH_VCOML_CTRL1, &tmp, 0);
-    tmp = 0x0EU;
+    tmp = 0x3CU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x00U;
+    tmp = 0x38U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
 
     /* Don't invert display, no args, no delay */
@@ -267,70 +270,70 @@ int32_t ST7735_Init(ST7735_Object_t *pObj, uint32_t ColorCoding, uint32_t Orient
 
     /* Magical unicorn dust, 16 args, no delay */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_PV_GAMMA_CTRL, &tmp, 0);
-    tmp = 0x10U;
-    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0EU;
-    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x02U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x03U;
-    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0EU;
+    tmp = 0x1CU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x07U;
-    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x02U;
-    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x07U;
-    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0AU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x12U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x17U;
-    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x37U;
+    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
+    tmp = 0x32U;
+    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
+    tmp = 0x29U;
+    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
+    tmp = 0x2DU;
+    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
+    tmp = 0x29U;
+    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
+    tmp = 0x25U;
+    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
+    tmp = 0x2BU;
+    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
+    tmp = 0x39U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x00U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0DU;
+    tmp = 0x01U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0EU;
+    tmp = 0x03U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x10U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
 
     /* Sparkles and rainbows, 16 args, no delay */
     ret += st7735_write_reg(&pObj->Ctx, ST7735_NV_GAMMA_CTRL, &tmp, 0);
-    tmp = 0x10U;
-    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0EU;
-    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x03U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x03U;
+    tmp = 0x1DU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0FU;
+    tmp = 0x07U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x06U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x02U;
+    tmp = 0x2EU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x08U;
+    tmp = 0x2CU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0AU;
+    tmp = 0x29U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x13U;
+    tmp = 0x2DU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x26U;
+    tmp = 0x2EU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x36U;
+    tmp = 0x2EU;
+    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
+    tmp = 0x37U;
+    ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
+    tmp = 0x3FU;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x00U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0DU;
+    tmp = 0x00U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
-    tmp = 0x0EU;
+    tmp = 0x02U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
     tmp = 0x10U;
     ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
@@ -500,6 +503,7 @@ int32_t ST7735_SetOrientation(ST7735_Object_t *pObj, uint32_t Orientation)
   ret = ST7735_SetDisplayWindow(pObj, 0U, 0U, ST7735Ctx.Width, ST7735Ctx.Height);
 
   tmp = (uint8_t)OrientationTab[Orientation][1];
+  tmp = 0x00;
   ret += st7735_write_reg(&pObj->Ctx, ST7735_MADCTL, &tmp, 1);
 
   ST7735Ctx.Orientation = Orientation;
@@ -539,8 +543,8 @@ int32_t ST7735_SetCursor(ST7735_Object_t *pObj, uint32_t Xpos, uint32_t Ypos)
   int32_t ret;
   uint8_t tmp;
 	
-	Xpos+=Xoff;
-	Ypos+=Yoff;
+	// Xpos+=Xoff;
+	// Ypos+=Yoff;
   ret = st7735_write_reg(&pObj->Ctx, ST7735_CASET, &tmp, 0);
   tmp = (uint8_t)(Xpos >> 8U);
   ret += st7735_send_data(&pObj->Ctx, &tmp, 1);
@@ -921,6 +925,9 @@ static int32_t ST7735_SetDisplayWindow(ST7735_Object_t *pObj, uint32_t Xpos, uin
 {
   int32_t ret;
   uint8_t tmp;
+
+  Xpos+=Xoff;
+  Ypos+=Yoff;
 
   /* Column addr set, 4 args, no delay: XSTART = Xpos, XEND = (Xpos + Width - 1) */
   ret = st7735_write_reg(&pObj->Ctx, ST7735_CASET, &tmp, 0);

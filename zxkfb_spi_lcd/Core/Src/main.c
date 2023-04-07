@@ -99,9 +99,10 @@ int main(void)
 	//uint8_t rgb[]={0x00, 0x1f};//red
 	//uint8_t rgb[]={0x07, 0xE0};//green
 	mylcd_startop();
-	ST7735_FillRect(&st7735, 0, 0, 160, 80, 0x00);
+	ST7735_FillRect(&st7735, 0, 0, 30, 50, ST7735_CYAN);
 	//ST7735_FillRGBRect(&st7735, 30, 30, rgb, 30, 30);
-	ST7735_DrawBitmap(&st7735, 0, 0, (uint8_t*)gImage_img);
+	//ST7735_DrawBitmap(&st7735, 0, 0, (uint8_t*)gImage_img
+	ST7735_DrawHLine(&st7735, 0, 0, 20, ST7735_RED);
 	mylcd_stopop();
 	
   /* USER CODE END 2 */
